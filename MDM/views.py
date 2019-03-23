@@ -458,15 +458,18 @@ class MdmDataPost(APIView):
         # 推入日志队列
         res = tasks.log_write.apply_async(args=request_log)
         res = tasks.log_write.apply_async(args=request_log)
-        print(display_meta.display_meta(request))
-        print(request.data)
+        # print(display_meta.display_meta(request))
+        # print(request.data)
         paras = request.data.get('MDM')
-        print(paras)
+        # print(paras)
         # 校验UUID存在与否
         uid = paras[0]['uuid']
-        if not pymdm.check_uuid_exists(uid):
+        if pymdm.check_uuid_exists(uid):
             return Response({'msg': 'UUID %s exist' % uid}, status=status.HTTP_400_BAD_REQUEST)
 
+        # uid = paras['对象UUID']
+        # if not pymdm.check_uuid_exists(uid):
+        #     return Response({'msg': 'UUID %s exist' % uid}, status=status.HTTP_400_BAD_REQUEST)
         # para_l = []
         # # 处理参数输出格式[[,,,,],[,,,,],...]
         # for i in paras:
@@ -477,9 +480,15 @@ class MdmDataPost(APIView):
         #     para_l.append(p)
         # print(para_l)
         # 立即推送队列
+
+        # 格式化参数
+        # para_dic = paras[0]
+        # uid = para_dic.pop('对象UUID')
+        # [{'uuid': uid, 'property_name': para_dic[k], 'property_uuid': k} for k in para_dic]
+
         result = tasks.addrecord.apply_async(args=[paras])
         result = tasks.addrecord.apply_async(args=[paras])
-        print(result)
+        # print(result)
         print(result.id)
         try:
             models.TaskLog.objects.create(task_id=result.id, parameter=paras, log_date=timezone.now())
@@ -492,6 +501,84 @@ class MdmDataPost(APIView):
         #     return Response(paras, status=status.HTTP_201_CREATED)
         if result:
             return Response(paras, status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class DataCategoryNamesList(APIView):
+    """
+        获取数据大类名称列表
+    """
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request, format=None):
+        request_log = display_meta.display_meta(request)
+        # 推入日志队列
+        res = tasks.log_write.apply_async(args=request_log)
+        res = tasks.log_write.apply_async(args=request_log)
+
+        return Response(pymdm.get_category_names())
+
+
+class DataSubCategoryNamesList(APIView):
+    """
+        根据大类uuid获取子数据名称列表
+    """
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request, format=None):
+        request_log = display_meta.display_meta(request)
+        # 推入日志队列
+        res = tasks.log_write.apply_async(args=request_log)
+        res = tasks.log_write.apply_async(args=request_log)
+        paras = request.data.get('uuid')
+        return Response(pymdm.get_sub_category_names_with_uuid(paras))
+
+
+# 更新
+class MdmDataUpdate(APIView):
+    """
+        更新
+        [uuid, {}, {}]
+    """
+    authentication_classes = []
+    permission_classes = []
+    def post(self, request, format=None):
+        request_log = display_meta.display_meta(request)
+        # 推入日志队列
+        res = tasks.log_write.apply_async(args=request_log)
+        res = tasks.log_write.apply_async(args=request_log)
+        para = request.data.get('MDM')
+        update_para = para[1:]
+        up_data = []
+        res_list = pymdm.get_property_detail_with_uuid(para[0])
+        d = {}
+
+        for r in res_list:
+            if r['属性名称'] not in d:
+                d[r['属性名称']] = r
+            else:
+                d[r['属性名称']] = r
+        print(d)
+        for up_d in update_para:
+            # for dd in d:
+            if up_d['property_name'] in d:
+                if up_d['property_value'] == d[up_d['property_name']]['属性值']:
+                    continue
+                else:
+                    # 有更新
+                    up_d['replace_id'] = d[up_d['property_name']]['内码']
+                    up_data.append(up_d)
+        result = tasks.addrecord.apply_async(args=[up_data])
+        result = tasks.addrecord.apply_async(args=[up_data])
+        try:
+            models.TaskLog.objects.create(task_id=result.id, parameter=paras, log_date=timezone.now())
+        except Exception as e:
+            pass
+        if result:
+            return Response(up_data, status=status.HTTP_201_CREATED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 

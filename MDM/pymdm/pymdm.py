@@ -213,14 +213,37 @@ def get_uuids_with_provalue_proname_inputvalue(pro_value, pro_name, input_value)
     return msodbc.ExecQuery(sql=sql, para=(pro_value, pro_name, input_value))
 
 
+# 获得数据大类名称
+def get_category_names():
+    sql = '''
+    select * from MDM_主数据表
+    where 属性名称='名称' and 对象UUID in(
+    select 对象UUID
+    from MDM_主数据表
+    where 属性值='辅助数据')
+    '''
+    return msodbc.ExecQuery(sql)
+
+# 根据大类uuid获取子项名称
+def get_sub_category_names_with_uuid(uid):
+    sql = '''
+    select * from MDM_主数据表
+    where 属性名称='名称' and 对象UUID in(
+    select 对象UUID from MDM_主数据表
+    where 属性值UUID=?)
+    '''
+    return msodbc.ExecQuery(sql=sql, para=uid)
+
+
+
 # 对象UUID校验是否存在
 def check_uuid_exists(uid):
     sql='''
-    select  1
+    select 内码
     from MDM_主数据表
     where 对象UUID=?
     '''
-    return msodbc.ExecQuery(uid)
+    return msodbc.ExecQuery(sql=sql, para=uid)
 
 
 if __name__ == '__main__':
