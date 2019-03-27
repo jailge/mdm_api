@@ -19,7 +19,7 @@ msodbcread = Odbc_Ms(settings.READER['HOST'], settings.READER['NAME'],
 
 @task
 def insert_record_2_db_para(d):
-    uid = d.get('uid')
+    uid = d.get('uuid')
     property_name = d.get('property_name')
     property_uuid = d.get('property_uuid')
     property_value = d.get('property_value')

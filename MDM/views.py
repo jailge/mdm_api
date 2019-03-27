@@ -148,6 +148,7 @@ class MainDataDetail(APIView):
     """
     authentication_classes = [Myauthentication]
     permission_classes = [MyPermission]
+    throttle_classes = []
     def get_object(self, pk):
         try:
             return 主数据表.objects.get(pk=pk)
@@ -179,27 +180,33 @@ class MdmPost(APIView):
     """
     authentication_classes = []
     permission_classes = []
+    throttle_classes = []
     def post(self, request, format=None):
         # 获取request请求信息
         request_log = display_meta.display_meta(request)
         # 推入日志队列
         result = tasks.log_write.apply_async(args=request_log)
         result = tasks.log_write.apply_async(args=request_log)
-
+        paras = request.data.get('MDM')
+        # print(paras)
+        # 校验UUID存在与否
+        uid = paras[0]['uuid']
+        if pymdm.check_uuid_exists(uid):
+            return Response({'msg': 'UUID %s exist' % uid}, status=status.HTTP_400_BAD_REQUEST)
         # print(request.data)
         start_time = time.time()
-        args = request.data
-        d = {
-            'uid': args['对象UUID'],
-            'property_name': args['属性名称'],
-            'property_uuid': args['属性值UUID'],
-            'property_value': args['属性值'],
-            'author': args['更新人'],
-        }
-        res = pymdm.insert_record_2_db_para(d)
+        # args = request.data
+        # d = {
+        #     'uid': args['对象UUID'],
+        #     'property_name': args['属性名称'],
+        #     'property_uuid': args['属性值UUID'],
+        #     'property_value': args['属性值'],
+        #     'author': args['更新人'],
+        # }
+        res = pymdm.insert_record_2_db_para(paras[0])
         print(time.time() - start_time)
         if res:
-            return Response(args, status=status.HTTP_201_CREATED)
+            return Response(paras, status=status.HTTP_201_CREATED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         # return Response(status.HTTP_200_OK)
@@ -211,6 +218,7 @@ class PropertyCategoryList(APIView):
     """
     authentication_classes = []
     permission_classes = []
+    throttle_classes = []
     def get(self, request, format=None):
         # 获取request请求信息
         request_log = display_meta.display_meta(request)
@@ -223,6 +231,7 @@ class PropertyCategoryList(APIView):
 class PropertyDetailList(APIView):
     authentication_classes = []
     permission_classes = []
+    throttle_classes = []
     def get(self, request, format=None):
         # print(tuid, type(tuid))
         request_log = display_meta.display_meta(request)
@@ -310,6 +319,7 @@ class PropertyDetailList(APIView):
 class PropertyDetailUid(APIView):
     authentication_classes = []
     permission_classes = []
+    throttle_classes = []
     def get(self, request, format=None):
         # 获取request请求信息
         request_log = display_meta.display_meta(request)
@@ -334,6 +344,7 @@ class PropertyNameList(APIView):
     属性名称列表
     """
     permission_classes = []
+    throttle_classes = []
     def get(self, request, format=None):
         # 获取request请求信息
         request_log = display_meta.display_meta(request)
@@ -349,6 +360,7 @@ class SearchQualification(APIView):
     """
     authentication_classes = []
     permission_classes = []
+    throttle_classes = []
     def get(self, request, format=None):
         # 获取request请求信息
         request_log = display_meta.display_meta(request)
@@ -455,6 +467,7 @@ class MdmDataPost(APIView):
     """
     authentication_classes = []
     permission_classes = []
+    throttle_classes = []
     def post(self, request, format=None):
         request_log = display_meta.display_meta(request)
         # 推入日志队列
@@ -513,7 +526,7 @@ class DataCategoryNamesList(APIView):
     """
     authentication_classes = []
     permission_classes = []
-
+    throttle_classes = []
     def get(self, request, format=None):
         request_log = display_meta.display_meta(request)
         # 推入日志队列
@@ -529,7 +542,7 @@ class DataSubCategoryNamesList(APIView):
     """
     authentication_classes = []
     permission_classes = []
-
+    throttle_classes = []
     def get(self, request, format=None):
         request_log = display_meta.display_meta(request)
         # 推入日志队列
@@ -547,6 +560,7 @@ class MdmDataUpdate(APIView):
     """
     authentication_classes = []
     permission_classes = []
+    throttle_classes = []
     def post(self, request, format=None):
         request_log = display_meta.display_meta(request)
         # 推入日志队列
