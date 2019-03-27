@@ -1,3 +1,5 @@
+# coding=utf-8
+
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from MDM.pymdm import pymdm

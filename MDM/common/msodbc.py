@@ -26,7 +26,7 @@ class Odbc_Ms:
         ODBC Driver连接方式
         """
         self.conn = pyodbc.connect(
-            'DRIVER={ODBC Driver 13 for SQL Server}; SERVER=%s; DATABASE=%s;UID=%s;PWD=%s;' % (
+            'DRIVER={ODBC Driver 13 for SQL Server}; SERVER=%s; DATABASE=%s;UID=%s;PWD=%s;charset="utf8"' % (
                 self.server, self.database, self.uid, self.pwd)
         )
         cur = self.conn.cursor()
@@ -68,8 +68,8 @@ class Odbc_Ms:
 
 
 if __name__ == '__main__':
-    ms = Odbc_Ms('10.10.6.66', 'test', 'sa', 'sa123')
-    sql = 'select * from Task'
+    ms = Odbc_Ms('10.10.7.128', 'GMMDM', 'sa', 'k3data~`951456+')
+    sql = 'select * from MDM_visitlog'
     re = ms.ExecQuery(sql, None, True)
     print(re)
 

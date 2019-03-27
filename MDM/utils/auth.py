@@ -1,3 +1,5 @@
+# coding=utf-8
+
 from rest_framework.authentication import BaseAuthentication
 from rest_framework import exceptions
 from MDM import models

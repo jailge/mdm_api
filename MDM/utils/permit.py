@@ -1,3 +1,5 @@
+# coding=utf-8
+
 from rest_framework.permissions import BasePermission
 from rest_framework.permissions import AllowAny
 from MDM import models

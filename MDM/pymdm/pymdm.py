@@ -1,3 +1,5 @@
+# coding=utf-8
+
 from MDM.common.msodbc import Odbc_Ms
 # from django.conf import settings
 from mdm_api import settings
@@ -10,6 +12,9 @@ msodbc = Odbc_Ms(settings.DATABASES['default']['HOST'],
         settings.DATABASES['default']['NAME'],
         settings.DATABASES['default']['USER'],
         settings.DATABASES['default']['PASSWORD'])
+
+msodbcread = Odbc_Ms(settings.READER['HOST'], settings.READER['NAME'],
+                     settings.READER['USER'], settings.READER['PASSWORD'])
 
 
 @task
@@ -114,7 +119,7 @@ def get_property_category():
     '''
     # raw = db_handle.custom_exec_sql(sql)
     # for
-    return msodbc.ExecQuery(sql)
+    return msodbcread.ExecQuery(sql)
 
 
 # 根据uidTable查询
@@ -130,7 +135,7 @@ def get_property_detail(tableuuid):
     ' +@tablename+ ')'
     exec sp_executesql @sql
     '''
-    return msodbc.ExecQuery(sql=sql, para=tableuuid)
+    return msodbcread.ExecQuery(sql=sql, para=tableuuid)
 
 # 根据对象UUID查询主表更新值
 def get_property_update_with_uuid(uid):
@@ -143,7 +148,7 @@ def get_property_update_with_uuid(uid):
 
     ) and 对象UUID=?
     '''
-    return msodbc.ExecQuery(sql=sql, para=uid)
+    return msodbcread.ExecQuery(sql=sql, para=uid)
 
 
 # 根据UUID获取对应数据
@@ -161,7 +166,7 @@ def get_property_detail_with_uuid(uid):
     FROM [swtest].[dbo].[MDM_主数据表]
     where 对象UUID=?
     '''
-    return msodbc.ExecQuery(sql=sql, para=uid)
+    return msodbcread.ExecQuery(sql=sql, para=uid)
 
 
 # 属性名称列表
@@ -177,7 +182,7 @@ def get_property_name():
     sql = '''
     select distinct 属性名称 from MDM_自动表名映射
     '''
-    return msodbc.ExecQuery(sql)
+    return msodbcread.ExecQuery(sql)
 
 
 # 根据属性名称获得表UUID及所含属性值
@@ -188,7 +193,7 @@ def get_property_value_with_pname(pname):
       from MDM_自动表名映射
       where 属性值=?
     '''
-    return msodbc.ExecQuery(sql=sql, para=pname)
+    return msodbcread.ExecQuery(sql=sql, para=pname)
 
 
 # 根据属性值和名称 查找符合条件的记录(对象UUID集)
@@ -210,7 +215,7 @@ def get_uuids_with_provalue_proname_inputvalue(pro_value, pro_name, input_value)
 
     exec sp_executesql @sql
     """
-    return msodbc.ExecQuery(sql=sql, para=(pro_value, pro_name, input_value))
+    return msodbcread.ExecQuery(sql=sql, para=(pro_value, pro_name, input_value))
 
 
 # 获得数据大类名称
@@ -222,7 +227,7 @@ def get_category_names():
     from MDM_主数据表
     where 属性值='辅助数据')
     '''
-    return msodbc.ExecQuery(sql)
+    return msodbcread.ExecQuery(sql)
 
 # 根据大类uuid获取子项名称
 def get_sub_category_names_with_uuid(uid):
@@ -232,7 +237,7 @@ def get_sub_category_names_with_uuid(uid):
     select 对象UUID from MDM_主数据表
     where 属性值UUID=?)
     '''
-    return msodbc.ExecQuery(sql=sql, para=uid)
+    return msodbcread.ExecQuery(sql=sql, para=uid)
 
 
 
@@ -243,7 +248,7 @@ def check_uuid_exists(uid):
     from MDM_主数据表
     where 对象UUID=?
     '''
-    return msodbc.ExecQuery(sql=sql, para=uid)
+    return msodbcread.ExecQuery(sql=sql, para=uid)
 
 
 if __name__ == '__main__':

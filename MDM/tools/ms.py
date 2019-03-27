@@ -1,3 +1,4 @@
+# coding=utf-8
 
 from celery import signature, chain, chord, group
 

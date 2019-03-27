@@ -38,9 +38,9 @@ CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 24
 CELERYD_TASK_SOFT_TIME_LIMIT = 2800
 
 
-CELERY_DEFAULT_EXCHANGE = 'celery'
+CELERY_DEFAULT_EXCHANGE = 'mdm'
 CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
-CELERY_DEFAULT_ROUTING_KEY = 'celery'
+CELERY_DEFAULT_ROUTING_KEY = 'mdm'
 
 
 # Quick-start development settings - unsuitable for production
@@ -50,7 +50,7 @@ CELERY_DEFAULT_ROUTING_KEY = 'celery'
 SECRET_KEY = 'knpm-5)^7y7nlc9dsr&jws1cg%6qfxb(520h7#_$dtm4&k43&4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -109,10 +109,10 @@ DATABASES = {
         'ENGINE': 'sql_server.pyodbc',
         # 'ENGINE': "django_pyodbc",
         # 'NAME': 'testapi',
-        'NAME': 'swtest',
+        'NAME': 'GMMDM',
         'USER': 'sa',
-        'PASSWORD': 'sa123',
-        'HOST': '10.10.7.80',
+        'PASSWORD': 'k3data~`951456+',
+        'HOST': '10.10.7.130',
         'OPTIONS': {
             # 'dsn': '6.66',
             # 'host_is_server': True,
@@ -120,6 +120,13 @@ DATABASES = {
             'MARS_Connection': True,
         }
     }
+}
+
+READER = {
+        'NAME': 'GMMDM',
+        'USER': 'sa',
+        'PASSWORD': 'k3data~`951456+',
+        'HOST': '10.10.7.128',
 }
 
 
@@ -164,9 +171,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 # api格式
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 # worker格式
-# STATIC_ROOT = os.path.join(BASE_DIR, '/static/')
+STATIC_ROOT = os.path.join(BASE_DIR, '/static/')
 
 
 REST_FRAMEWORK = {

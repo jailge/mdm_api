@@ -1,3 +1,4 @@
+# coding=utf-8
 
 def display_meta(request):
     computer_name = request.META.get('COMPUTERNAME')
